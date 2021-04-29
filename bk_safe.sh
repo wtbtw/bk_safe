@@ -2,10 +2,42 @@
 ######################################
 # linux主机安全基线检查
 ######################################
-
 scanner_time=`date '+%Y-%m-%d_%H:%M:%S'`
 scanner_log="/tmp/checkResult_${scanner_time}.log"
-
+#调用函数库
+[ -f /etc/init.d/functions ] && source /etc/init.d/functions
+export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+source /etc/profile
+#Require root to run this script.
+[ $(id -u) -gt 0 ] && echo "请用root用户执行此脚本！" && exit 1
+#报错日志记录
+[ -f ${scanner_log} ] || touch ${scanner_log}
+function getSystemStatus(){
+    echo ""
+    if [ -e /etc/sysconfig/i18n ];then
+        default_LANG="$(grep "LANG=" /etc/sysconfig/i18n | grep -v "^#" | awk -F '"' '{print $2}')"
+    else
+        default_LANG=$LANG
+    fi
+    export LANG="en_US.UTF-8"
+    Release=$(cat /etc/redhat-release 2>/dev/null)
+    Kernel=$(uname -r)
+    OS=$(uname -o)
+    Hostname=$(uname -n)
+    SELinux=$(/usr/sbin/sestatus | grep "SELinux status: " | awk '{print $3}')
+    LastReboot=$(who -b | awk '{print $3,$4}')
+    uptime=$(uptime | sed 's/.*up \([^,]*\), .*/\1/')
+    echo "     系统：$OS"
+    echo " 发行版本：$Release"
+    echo "     内核：$Kernel"
+    echo "   主机名：$Hostname"
+    echo "  SELinux：$SELinux"
+    echo "语言/编码：$default_LANG"
+    echo " 扫描时间：$(date +'%F %T')"
+    echo " 最后启动：$LastReboot"
+    echo " 运行时间：$uptime"
+    export LANG="$default_LANG"
+}
 bk_safe(){
   echo ""
   echo -e "\033[33m********************************Linux主机安全基线检查***********************************\033[0m"
