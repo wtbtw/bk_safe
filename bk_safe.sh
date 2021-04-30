@@ -5,7 +5,7 @@
 scanner_time=`date '+%Y-%m-%d_%H:%M:%S'`
 scanner_log="/tmp/checkResult_${scanner_time}.log"
 #调用函数库
-[ -f /etc/init.d/functions ] && source /etc/init.d/functions
+#[ -f /etc/init.d/functions ] && source /etc/init.d/functions
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
 source /etc/profile
 #Require root to run this script.
