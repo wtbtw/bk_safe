@@ -7,12 +7,12 @@ scanner_log="/tmp/checkResult_${scanner_time}.log"
 #调用函数库
 #[ -f /etc/init.d/functions ] && source /etc/init.d/functions
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
-source /etc/profile
+#source /etc/profile
 #Require root to run this script.
 [ $(id -u) -gt 0 ] && echo "请用root用户执行此脚本！" && exit 1
 #报错日志记录
 [ -f ${scanner_log} ] || touch ${scanner_log}
-function getSystemStatus(){
+getSystemStatus(){
     echo ""
     if [ -e /etc/sysconfig/i18n ];then
         default_LANG="$(grep "LANG=" /etc/sysconfig/i18n | grep -v "^#" | awk -F '"' '{print $2}')"
@@ -95,7 +95,7 @@ bk_safe(){
   checkTimeout=$(cat /etc/profile | grep TMOUT | awk -F[=] '{print $2}')
   if [ $? -eq 0 ];then
     TMOUT=`cat /etc/profile | grep TMOUT | awk -F[=] '{print $2}'`
-    if [ $TMOUT -le 600 -a $TMOUT -ge 10 ];then
+    if [ "$TMOUT -le 600" -a "$TMOUT -ge 10" ];then
       echo "[Y] 账号超时时间${TMOUT}秒,符合要求" >> ${scanner_log}
     else
       echo "[N] 账号超时时间${TMOUT}秒,不符合要求，建议设置小于600秒">> ${scanner_log}
@@ -274,7 +274,7 @@ bk_safe(){
   if [ $telnetd = "0" ]; then
     echo "[Y] 系统未安装telnet服务 " >> ${scanner_log}
   else
-	echo "[N] 检测到安装了telnet服务，不符合要求，建议禁用telnet服务" >> ${scanner_log}
+    echo "[N] 检测到安装了telnet服务，不符合要求，建议禁用telnet服务" >> ${scanner_log}
   fi
 
 
